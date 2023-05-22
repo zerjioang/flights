@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zerjioang/flights/server/datatype"
+	"log"
 )
 
 var (
@@ -25,90 +26,63 @@ func NewBasicSolver() FlightSolver {
 }
 
 // Solve executes current flight tracking solver algorithm
-func (b BasicSolver) Solve(data datatype.FlightData) (*datatype.Flight, error) {
-	if data == nil {
+func (b BasicSolver) Solve(data *datatype.FlightData) (*datatype.Flight, error) {
+	verbose := false
+	if data == nil || len(data.Input) == 0 {
 		return nil, errNoData
 	}
-	if len(data) == 1 {
-		return data[0], nil
+	if len(data.Input) == 0 {
+		return data.Input[0], nil
 	}
-	var analyzedPoints = map[string]*datatype.Flight{}
-	var possibleOrigins = map[string]*datatype.Flight{}
-	for i := 0; i < len(data); i++ {
-		point := data[i]
+	if len(data.Input) == 1 {
+		return data.Input[0], nil
+	}
+	var possibleOrigins = map[string]*datatype.Path{}
+	var possibleDestinations = map[string]*datatype.Path{}
+
+	for i := 0; i < len(data.Input); i++ {
+		flight := data.Input[i]
 		// store current city in analyzed points if not previously created
-		if _, ok := analyzedPoints[point.From.String()]; !ok {
-			fromId := point.From.String()
-			prevPoint := datatype.NewFlight("???", fromId)
-			point.PrevHop = prevPoint
-			// update status
-			prevPoint.PrevHop = nil //lookupPoint(analyzedPoints, point.From.String(), nil)
-			prevPoint.NextHop = lookupPoint(analyzedPoints, point.To.String(), point)
-			// store the point
-			analyzedPoints[fromId] = point
-			// add current point as possible flight origin
-			possibleOrigins[fromId] = point
+		fromId := flight.From.String()
+		departureCity := data.Cities[fromId]
+		// update status
+		departureCity.To = data.Cities[flight.To.String()]
+		dstId := flight.To.String()
+		destinationCity := data.Cities[dstId]
+		// update status
+		destinationCity.From = data.Cities[flight.From.String()]
+		// add current city as possible flight origin
+		if departureCity.From == nil {
+			possibleOrigins[fromId] = departureCity
 		}
-		if p, ok := analyzedPoints[point.To.String()]; !ok {
-			dstId := point.To.String()
-			// now create virtual destination hop if origin/destination is not available 'yet'
-			// example
-			// current: [["ATL", "EWR"]
-			// next hop: [EWR, UNKNOWN]
-			nextPoint := datatype.NewFlight(dstId, "???")
-			point.NextHop = nextPoint
-			// update status
-			nextPoint.PrevHop = lookupPoint(analyzedPoints, point.From.String(), point)
-			nextPoint.NextHop = nil // lookupPoint(analyzedPoints, point.To.String(), nil)
-			analyzedPoints[dstId] = nextPoint
-			// remove this point from possible origins
-			delete(possibleOrigins, dstId)
-		} else {
-			// update existing node hops
-			if p.PrevHop != nil && p.PrevHop.From.String() == "???" {
-				point.NextHop = p
-				delete(possibleOrigins, p.From.String())
-			}
+		delete(possibleOrigins, destinationCity.CityName)
+		// add current city as possible flight destination
+		if destinationCity.To == nil {
+			possibleDestinations[dstId] = destinationCity
 		}
+		delete(possibleDestinations, departureCity.CityName)
 	}
+
 	if len(possibleOrigins) > 1 {
-		fmt.Println("warning: multiple possible origins detected")
+		log.Fatal("warning: multiple possible origins detected")
 	}
-	var origin *datatype.Flight
+	if len(possibleDestinations) > 1 {
+		log.Fatal("warning: multiple possible destinations detected")
+	}
+
+	var src *datatype.Path
 	for _, flight := range possibleOrigins {
-		origin = flight
+		src = flight
 		break
 	}
-	return resolveTrip(origin)
-}
-
-func lookupPoint(data map[string]*datatype.Flight, id string, fallback *datatype.Flight) *datatype.Flight {
-	p, ok := data[id]
-	if ok {
-		return p
+	var dst *datatype.Path
+	for _, flight := range possibleDestinations {
+		dst = flight
+		break
 	}
-	return fallback
-}
-
-func resolveTrip(origin *datatype.Flight) (*datatype.Flight, error) {
-	if origin == nil {
-		return nil, errors.New("cannot detected trip origin")
+	if verbose {
+		fmt.Println("Origin:", src.CityName)
+		fmt.Println("Destination:", dst.CityName)
 	}
-	//fmt.Println("Origin:", origin.From)
-	var dst *datatype.Flight
-	currentPoint := origin
-	// to avoid infinite loops in case of bad inputs
-	maxHopsAllowed := 100
-	iter := 0
-	for currentPoint != nil && iter < maxHopsAllowed {
-		dst = currentPoint
-		currentPoint = currentPoint.NextHop
-		iter++
-	}
-	if dst == nil {
-		return nil, errors.New("could not find a valid solution for given input")
-	}
-	//fmt.Println("Passenger flight connection numbers: ", iter)
-	//fmt.Println("Destination:", dst.From)
-	return datatype.NewFlight(origin.From.String(), dst.From.String()), nil
+	return datatype.NewFlight(src.CityName, dst.CityName), nil
 }

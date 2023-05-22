@@ -11,18 +11,33 @@ import (
 // [["SFO", "EWR"]]                                                 => ["SFO", "EWR"]
 // [["ATL", "EWR"], ["SFO", "ATL"]]                                 => ["SFO", "EWR"]
 // [["IND", "EWR"], ["SFO", "ATL"], ["GSO", "IND"], ["ATL", "GSO"]] => ["SFO", "EWR"]
-type FlightData []*Flight
+type FlightData struct {
+	Input  []*Flight
+	Cities map[string]*Path
+}
 
-func (d *FlightData) Load(reader io.ReadCloser) error {
+type Path struct {
+	CityName string
+	From     *Path
+	To       *Path
+}
+
+func (d *FlightData) Load(reader io.Reader) error {
 	var dst [][]string
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	if err := json.NewDecoder(reader).Decode(&dst); err != nil {
 		return err
 	}
+	d.Cities = map[string]*Path{}
 	for _, item := range dst {
 		if len(item) == 2 {
-			f := NewFlight(item[0], item[1])
-			*d = append(*d, f)
+			d.Input = append(d.Input, NewFlight(item[0], item[1]))
+			d.Cities[item[0]] = &Path{
+				CityName: item[0],
+			}
+			d.Cities[item[1]] = &Path{
+				CityName: item[1],
+			}
 		} else {
 			return errors.New("invalid flight data found")
 		}
@@ -36,8 +51,8 @@ type Flight struct {
 	To    Name
 	Valid bool
 	// used while analyzing content
-	PrevHop *Flight
-	NextHop *Flight
+	PrevHop *Path
+	NextHop *Path
 }
 
 // Name is the name of the flight

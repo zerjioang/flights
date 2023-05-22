@@ -6,5 +6,5 @@ import "github.com/zerjioang/flights/server/datatype"
 // Optimizing the solver immplementation and swapping in the interface usage will affect
 // to entire application
 type FlightSolver interface {
-	Solve(data datatype.FlightData) (*datatype.Flight, error)
+	Solve(data *datatype.FlightData) (*datatype.Flight, error)
 }

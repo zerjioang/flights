@@ -50,7 +50,7 @@ func (ctl FlightController) calculate(ctx echo.Context) error {
 		log.Println("failed to unmarshal json body due to:", err)
 		return errInvalidJson
 	}
-	passengerFlight, err := ctl.solver.Solve(data)
+	passengerFlight, err := ctl.solver.Solve(&data)
 	if err != nil {
 		log.Println("failed to solve flight tracking data due to:", err)
 		return err
