@@ -3,8 +3,9 @@ package core
 import (
 	"errors"
 	"fmt"
-	"github.com/zerjioang/flights/server/datatype"
 	"log"
+
+	"github.com/zerjioang/flights/server/datatype"
 )
 
 var (

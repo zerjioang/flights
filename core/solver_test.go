@@ -1,11 +1,12 @@
 package core
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/zerjioang/easypprof"
 	"github.com/zerjioang/flights/server/datatype"
-	"strings"
-	"testing"
 )
 
 func TestBasicSolver_Solve(t *testing.T) {

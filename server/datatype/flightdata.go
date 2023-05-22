@@ -2,8 +2,9 @@ package datatype
 
 import (
 	"errors"
-	jsoniter "github.com/json-iterator/go"
 	"io"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // FlightData is the flight data model of all flights for a given passenger
