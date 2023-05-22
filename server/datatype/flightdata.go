@@ -1,8 +1,8 @@
 package datatype
 
 import (
-	"encoding/json"
 	"errors"
+	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"io"
 )
@@ -16,6 +16,7 @@ type FlightData []*Flight
 
 func (d *FlightData) Load(reader io.ReadCloser) error {
 	var dst [][]string
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	if err := json.NewDecoder(reader).Decode(&dst); err != nil {
 		return err
 	}
@@ -35,6 +36,9 @@ type Flight struct {
 	From  Name
 	To    Name
 	Valid bool
+	// used while analyzing content
+	PrevHop *Flight
+	NextHop *Flight
 }
 
 // Name is the name of the flight
@@ -75,6 +79,10 @@ func (f *Flight) MarshalJSON() ([]byte, error) {
 	responseFormat[0] = f.From.String()
 	responseFormat[1] = f.To.String()
 	return json.Marshal(responseFormat)
+}
+
+func (f *Flight) Id() string {
+	return fmt.Sprintf("%s->%s", f.From, f.To)
 }
 
 // parseName validates and parses input name

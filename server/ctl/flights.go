@@ -52,6 +52,7 @@ func (ctl FlightController) calculate(ctx echo.Context) error {
 	}
 	passengerFlight, err := ctl.solver.Solve(data)
 	if err != nil {
+		log.Println("failed to solve flight tracking data due to:", err)
 		return err
 	}
 	return ctx.JSON(http.StatusOK, passengerFlight)
