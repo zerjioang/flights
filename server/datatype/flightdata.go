@@ -1,7 +1,10 @@
 package datatype
 
 import (
+	"encoding/json"
+	"errors"
 	jsoniter "github.com/json-iterator/go"
+	"io"
 )
 
 // FlightData is the flight data model of all flights for a given passenger
@@ -9,7 +12,23 @@ import (
 // [["SFO", "EWR"]]                                                 => ["SFO", "EWR"]
 // [["ATL", "EWR"], ["SFO", "ATL"]]                                 => ["SFO", "EWR"]
 // [["IND", "EWR"], ["SFO", "ATL"], ["GSO", "IND"], ["ATL", "GSO"]] => ["SFO", "EWR"]
-type FlightData []Flight
+type FlightData []*Flight
+
+func (d *FlightData) Load(reader io.ReadCloser) error {
+	var dst [][]string
+	if err := json.NewDecoder(reader).Decode(&dst); err != nil {
+		return err
+	}
+	for _, item := range dst {
+		if len(item) == 2 {
+			f := NewFlight(item[0], item[1])
+			*d = append(*d, f)
+		} else {
+			return errors.New("invalid flight data found")
+		}
+	}
+	return nil
+}
 
 // Flight is the content of one single item that represents a passenger flight
 type Flight struct {

@@ -46,7 +46,7 @@ func NewFlightController(solver core.FlightSolver) FlightController {
 func (ctl FlightController) calculate(ctx echo.Context) error {
 	var data datatype.FlightData
 	// read incoming http data
-	if err := ctx.Bind(&data); err != nil {
+	if err := data.Load(ctx.Request().Body); err != nil {
 		log.Println("failed to unmarshal json body due to:", err)
 		return errInvalidJson
 	}

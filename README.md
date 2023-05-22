@@ -17,3 +17,59 @@
 * Your miscroservice must listen on port 8080 and expose the flight path tracker under the /calculate endpoint.
 * Define and document the format of the API endpoint in the README.
 * Use Golang and/or any tools that you think will help you best accomplish the task at hand.
+
+## API Documentation
+
+The API has following endpoints:
+
+* GET `/v1/health`
+* POST `/v1/calculate`
+
+### Basic health check
+
+Useful to check microservice status manually or automatically by load balancers.
+
+**Request example:**
+
+```bash
+curl -X 'GET' \
+'http://localhost:8080/v1/health' \
+-H 'accept: application/json'
+```
+
+**Response example**
+
+```json
+{
+  "data": "pong",
+  "hostname": "75823749265host",
+  "ts": 1684755273
+}
+```
+
+See more information at: http://localhost:8080/v1/docs/index.html#/healthCheck/healthCheck-get
+
+### Flight tracking
+
+Given a list of passenger flights, it returns the starting point and travel destination point of given passenger.
+
+**Request example:**
+
+```bash
+curl -X 'POST' \
+    'http://localhost:8080/v1/calculate' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '[["IND", "EWR"], ["SFO", "ATL"], ["GSO", "IND"], ["ATL", "GSO"]]'
+```
+
+**Response example**
+
+```json
+[
+  "SFO",
+  "EWR"
+]
+```
+
+See more information at: http://localhost:8080/v1/docs/index.html#/FlightsCalculate/flightsCalculate-GET
