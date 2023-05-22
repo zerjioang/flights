@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/zerjioang/flights/cmd"
 	"github.com/zerjioang/flights/embed"
 )

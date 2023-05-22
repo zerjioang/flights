@@ -1,10 +1,11 @@
 package ctl
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 // HealthController is the HTTP controller for microservice
 // health check related data
 type HealthController struct {
-	baseController
+	_ baseController
 }
 
 // compilation time interface implementation check

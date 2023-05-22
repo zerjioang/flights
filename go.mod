@@ -3,6 +3,7 @@ module github.com/zerjioang/flights
 go 1.20
 
 require (
+	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/spf13/cobra v1.7.0
 	github.com/swaggo/echo-swagger v1.3.5
@@ -22,6 +23,8 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
+	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/swaggo/files v1.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

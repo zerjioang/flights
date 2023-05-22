@@ -1,15 +1,16 @@
 package ctl
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"net/http"
 )
 
 // SwaggerController is the HTTP controller for microservice
 // realtime documentation using swagger docs
 type SwaggerController struct {
-	baseController
+	_        baseController
 	user     string
 	password string
 }

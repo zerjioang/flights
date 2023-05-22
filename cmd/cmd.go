@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/zerjioang/flights/server"
-	"log"
 )
 
 var rootCmd = &cobra.Command{

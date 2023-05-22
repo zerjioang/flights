@@ -1,10 +1,23 @@
 package ctl
 
-import "github.com/labstack/echo/v4"
+import (
+	"errors"
+	"log"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/zerjioang/flights/core"
+	"github.com/zerjioang/flights/server/datatype"
+)
+
+var (
+	errInvalidJson = errors.New("invalid JSON request content")
+)
 
 // FlightController is the HTTP controller for flight related data
 type FlightController struct {
-	baseController
+	_      baseController
+	solver core.FlightSolver
 }
 
 // compilation time interface implementation check
@@ -12,8 +25,11 @@ var _ HTTPRegistrar = (*FlightController)(nil)
 
 // NewFlightController is a constructor like function that returns
 // a new FlightController
-func NewFlightController() FlightController {
-	return FlightController{}
+func NewFlightController(solver core.FlightSolver) FlightController {
+	if solver == nil {
+		panic("solver not defined. Please check your calls to NewFlightController()")
+	}
+	return FlightController{solver: solver}
 }
 
 // calculate runs a flight track calculation
@@ -28,7 +44,17 @@ func NewFlightController() FlightController {
 // @Failure 500 {object} map[string]interface{}	"Internal Server Error"
 // @Router /v1/calculate [post]
 func (ctl FlightController) calculate(ctx echo.Context) error {
-	return nil
+	var data datatype.FlightData
+	// read incoming http data
+	if err := ctx.Bind(&data); err != nil {
+		log.Println("failed to unmarshal json body due to:", err)
+		return errInvalidJson
+	}
+	passengerFlight, err := ctl.solver.Solve(data)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, passengerFlight)
 }
 
 // Register adds new endpoints to current server handler
