@@ -55,7 +55,6 @@ func (b BasicSolver) Solve(data *datatype.FlightData) (*datatype.Flight, error) 
 
 	for i := 0; i < len(data.Input); i++ {
 		flight := data.Input[i]
-		// store current city in analyzed points if not previously created
 		fromId := flight.From.String()
 		departureCity := data.Cities[fromId]
 		// update status
