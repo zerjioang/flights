@@ -2,7 +2,6 @@ package datatype
 
 import (
 	"errors"
-	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"io"
 )
@@ -42,7 +41,7 @@ type Flight struct {
 }
 
 // Name is the name of the flight
-type Name [3]byte
+type Name string
 
 // NewFlight creates a new flight and parses its input data
 func NewFlight(from, to string) *Flight {
@@ -81,20 +80,25 @@ func (f *Flight) MarshalJSON() ([]byte, error) {
 	return json.Marshal(responseFormat)
 }
 
-func (f *Flight) Id() string {
-	return fmt.Sprintf("%s->%s", f.From, f.To)
+// Reset puts flight values back to its defaults
+func (f *Flight) Reset() {
+	f.From = ""
+	f.To = ""
+	f.Valid = false
+	f.NextHop = nil
+	f.PrevHop = nil
 }
 
 // parseName validates and parses input name
 func parseName(name string) (Name, bool) {
 	if len(name) != 3 {
-		return Name{}, false
+		return "", false
 	}
 	// safe bytes to string conversion
-	return Name([]byte(name)), true
+	return Name(name), true
 }
 
 func (n Name) String() string {
 	// safe string to byte conversion
-	return string([]byte{n[0], n[1], n[2]})
+	return string(n)
 }

@@ -42,7 +42,7 @@ func (b BasicSolver) Solve(data datatype.FlightData) (*datatype.Flight, error) {
 			prevPoint := datatype.NewFlight("???", fromId)
 			point.PrevHop = prevPoint
 			// update status
-			prevPoint.PrevHop = lookupPoint(analyzedPoints, point.From.String(), nil)
+			prevPoint.PrevHop = nil //lookupPoint(analyzedPoints, point.From.String(), nil)
 			prevPoint.NextHop = lookupPoint(analyzedPoints, point.To.String(), point)
 			// store the point
 			analyzedPoints[fromId] = point
@@ -59,9 +59,9 @@ func (b BasicSolver) Solve(data datatype.FlightData) (*datatype.Flight, error) {
 			point.NextHop = nextPoint
 			// update status
 			nextPoint.PrevHop = lookupPoint(analyzedPoints, point.From.String(), point)
-			nextPoint.NextHop = lookupPoint(analyzedPoints, point.To.String(), nil)
+			nextPoint.NextHop = nil // lookupPoint(analyzedPoints, point.To.String(), nil)
 			analyzedPoints[dstId] = nextPoint
-			// remove this point from possible origins (conditional exists)
+			// remove this point from possible origins
 			delete(possibleOrigins, dstId)
 		} else {
 			// update existing node hops

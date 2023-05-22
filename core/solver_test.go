@@ -73,7 +73,23 @@ func TestBasicSolver_Solve(t *testing.T) {
 }
 
 func BenchmarkBasicSolver_Solve(b *testing.B) {
+	// baseline
+	// BenchmarkBasicSolver_Solve/sample-8         	 1876402	       629.4 ns/op	   1.59 MB/s	     160 B/op	      11 allocs/op
+	// converting city names from Name datatype to string
+	// BenchmarkBasicSolver_Solve/sample-8         	 3122499	       368.5 ns/op	   2.71 MB/s	     384 B/op	       6 allocs/op
+	//
 	b.Run("sample", func(b *testing.B) {
-
+		s := NewBasicSolver()
+		data := datatype.FlightData{
+			datatype.NewFlight("ATL", "EWR"),
+			datatype.NewFlight("SFO", "ATL"),
+			datatype.NewFlight("GSO", "IND"),
+			datatype.NewFlight("ATL", "GSO"),
+		}
+		easypprof.Bench(b, func() {
+			solution, err := s.Solve(data)
+			assert.NoError(b, err)
+			assert.NotNil(b, solution)
+		})
 	})
 }
