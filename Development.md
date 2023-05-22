@@ -56,4 +56,20 @@ Output should be:
 
 ## Documentation
 
-Documentation is available at: /docs
+Documentation is available at project README.md and built-in API swagger API docs. However a quick start is shown below:
+
+```bash
+git clone git@github.com:zerjioang/flights.git
+cd flights
+go mod tidy
+go build
+```
+
+After compiling the API run it with:
+
+```bash
+Running version:  0.0.1
+⇨ http server started on [::]:8080
+```
+
+a local server will be started at http://localhost:8080 with Swagger UI at http://localhost:8080/v1/docs//index.html
