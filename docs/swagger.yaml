@@ -1,0 +1,53 @@
+info:
+  contact: {}
+paths:
+  /v1/calculate:
+    post:
+      consumes:
+      - application/json
+      description: run a flight track calculation of given passenger
+      operationId: flightsCalculate-GET
+      parameters:
+      - description: Flight data
+        in: body
+        name: flightData
+        required: true
+        schema:
+          items:
+            items:
+              type: string
+            type: array
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: run a flight track calculation of given passenger
+      tags:
+      - FlightsCalculate
+  /v1/health:
+    get:
+      description: get the Flights service API status data
+      operationId: healthCheck-get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get service API status
+      tags:
+      - healthCheck
+swagger: "2.0"
